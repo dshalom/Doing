@@ -25,12 +25,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
-
-      - name: Access Api key
-        env:
-          API_KEY: ${{ secrets.API_KEY }}
-        run: echo API_KEY="$API_KEY" > ./local.properties
+        uses: android-actions/setup-android@v2./gr
 
       - name: Build Project
         run: ./gradlew assemble
@@ -39,4 +34,4 @@ jobs:
         run: ./gradlew test
 
       - name: Lint Checks
-        run: ./gradlew lintKotlin lint
+        run: ./gradlew lint ktlintCheck

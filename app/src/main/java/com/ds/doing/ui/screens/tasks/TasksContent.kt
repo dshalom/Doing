@@ -53,13 +53,11 @@ import com.ds.doing.domain.models.testTasks
 
 @Composable
 fun TasksContent() {
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
     ) {
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,7 +79,6 @@ fun TasksContent() {
                     titles = listOf("All", "To do", "In Progress", "In Review", "Done"),
                     modifier = Modifier
                 ) {
-
                 }
             }
             taskList(testTasks)
@@ -96,7 +93,6 @@ fun TasksContent() {
             Icon(imageVector = Icons.Filled.Add, contentDescription = "icon")
         }
     }
-
 }
 
 fun LazyListScope.taskList(taskList: List<Task>) {
@@ -107,7 +103,6 @@ fun LazyListScope.taskList(taskList: List<Task>) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Box(
                 modifier = Modifier
                     .size(56.dp)
@@ -131,7 +126,8 @@ fun LazyListScope.taskList(taskList: List<Task>) {
                         TaskStatus.InReview -> Icons.Default.BugReport
                         TaskStatus.Todo -> Icons.Default.EditNote
                     },
-                    contentDescription = "Add Subject")
+                    contentDescription = "Add Subject"
+                )
             }
             Spacer(modifier = Modifier.width(20.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -145,10 +141,10 @@ fun LazyListScope.taskList(taskList: List<Task>) {
                 )
             }
 
-
-            Box(modifier = Modifier.size(30.dp),
-                contentAlignment = Alignment.CenterEnd) {
-
+            Box(
+                modifier = Modifier.size(30.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
                 Icon(
                     modifier = Modifier.size(40.dp),
                     imageVector = Icons.Default.MoreHoriz,
@@ -156,10 +152,7 @@ fun LazyListScope.taskList(taskList: List<Task>) {
                 )
             }
         }
-
     }
-
-
 }
 
 @Composable
@@ -198,13 +191,11 @@ fun TaskChip(title: String, selected: Boolean, onClicked: () -> Unit) {
         label = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium
             )
         }
     )
-
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -227,19 +218,20 @@ private fun DoingSearch() {
         },
         leadingIcon = {
             Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
-        },
+        }
 
-        ) {
+    ) {
         searchHistory.takeLast(3).forEach { item ->
-            ListItem(modifier = Modifier.clickable { query = item },
+            ListItem(
+                modifier = Modifier.clickable { query = item },
                 headlineContent = {
                     Text(
                         text = item,
                         style = MaterialTheme.typography.labelLarge
                     )
                 },
-                leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) })
+                leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) }
+            )
         }
     }
-
 }

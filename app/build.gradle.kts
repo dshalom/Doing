@@ -3,6 +3,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
+    id("org.jlleitschuh.gradle.ktlint")
     kotlin("kapt")
 }
 
@@ -25,7 +26,6 @@ android {
         buildFeatures {
             buildConfig = true
         }
-
     }
 
     buildTypes {
@@ -65,8 +65,8 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.0")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.navigation:navigation-compose:2.7.5")
-    implementation ("androidx.compose.material3:material3:1.1.2")
-    //fonts
+    implementation("androidx.compose.material3:material3:1.1.2")
+    // fonts
     implementation("androidx.compose.ui:ui-text-google-fonts:1.5.4")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -86,8 +86,6 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
-
-
 }
 
 kapt {
