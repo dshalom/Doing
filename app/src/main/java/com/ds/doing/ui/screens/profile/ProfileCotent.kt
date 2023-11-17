@@ -14,6 +14,5 @@ fun ProfileContent() {
         contentAlignment = Alignment.Center
     ) {
         Text(text = "Profile")
-
     }
 }
