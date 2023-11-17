@@ -1,10 +1,7 @@
 package com.ds.doing.ui.screens.main
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -29,17 +26,16 @@ import com.ds.doing.ui.screens.tasks.TasksContent
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent() {
-
     val navController = rememberNavController()
 
     Scaffold(
-        bottomBar = { DoingNavigationBar(navController) },
+        bottomBar = { DoingNavigationBar(navController) }
 
     ) { paddingValues ->
         NavHost(
             navController,
             startDestination = Screen.TasksScreen.route,
-            Modifier.padding(paddingValues),
+            Modifier.padding(paddingValues)
         ) {
             composable(Screen.TasksScreen.route) { TasksContent() }
             composable(Screen.ProfileScreen.route) { ProfileContent() }
@@ -52,7 +48,6 @@ fun DoingNavigationBar(navController: NavHostController) {
     var selectedItem by remember { mutableStateOf(0) }
 
     NavigationBar {
-
         items.forEachIndexed { index, screen ->
             val selected = selectedItem == index
             NavigationBarItem(
@@ -74,10 +69,8 @@ fun DoingNavigationBar(navController: NavHostController) {
                         contentDescription = screen.title
                     )
                 },
-                label = { Text(text = screen.title) },
+                label = { Text(text = screen.title) }
             )
         }
-
     }
-
 }
