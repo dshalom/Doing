@@ -9,7 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -25,7 +25,7 @@ import com.ds.doing.ui.screens.tasks.TasksContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainContent() {
+fun MainContent(onAddTaskClicked: () -> Unit) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -37,7 +37,9 @@ fun MainContent() {
             startDestination = Screen.TasksScreen.route,
             Modifier.padding(paddingValues)
         ) {
-            composable(Screen.TasksScreen.route) { TasksContent() }
+            composable(Screen.TasksScreen.route) {
+                TasksContent(onAddTaskClicked = onAddTaskClicked)
+            }
             composable(Screen.ProfileScreen.route) { ProfileContent() }
         }
     }
@@ -45,7 +47,7 @@ fun MainContent() {
 
 @Composable
 fun DoingNavigationBar(navController: NavHostController) {
-    var selectedItem by remember { mutableStateOf(0) }
+    var selectedItem by remember { mutableIntStateOf(0) }
 
     NavigationBar {
         items.forEachIndexed { index, screen ->
@@ -65,7 +67,7 @@ fun DoingNavigationBar(navController: NavHostController) {
                 },
                 icon = {
                     Icon(
-                        imageVector = if (selected) screen.selectedIcon else screen.unSelectedIcon,
+                        imageVector = if (selected) screen.selectedIcon!! else screen.unSelectedIcon!!,
                         contentDescription = screen.title
                     )
                 },

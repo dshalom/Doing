@@ -52,7 +52,7 @@ import com.ds.doing.domain.models.TaskStatus
 import com.ds.doing.domain.models.testTasks
 
 @Composable
-fun TasksContent() {
+fun TasksContent(onAddTaskClicked: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +85,7 @@ fun TasksContent() {
         }
         FloatingActionButton(
             shape = CircleShape,
-            onClick = {},
+            onClick = onAddTaskClicked,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(20.dp)
