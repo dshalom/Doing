@@ -46,9 +46,9 @@ fun NewTaskContent(onBackPressed: () -> Unit) {
                 modifier = Modifier.wrapContentSize(),
                 "Name",
                 taskState.title
-            ) { s ->
+            ) { newTitle ->
                 taskState = NewTaskState(
-                    title = s,
+                    title = newTitle,
                     description = taskState.description
                 )
             }
@@ -58,10 +58,10 @@ fun NewTaskContent(onBackPressed: () -> Unit) {
                     .height(200.dp),
                 "Description",
                 taskState.description
-            ) { s ->
+            ) { newDescription ->
                 taskState = NewTaskState(
                     title = taskState.title,
-                    description = s
+                    description = newDescription
                 )
             }
         }
