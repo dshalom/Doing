@@ -1,7 +1,6 @@
 package com.ds.doing.ui.screens.main
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -23,7 +22,6 @@ import com.ds.doing.ui.screens.items
 import com.ds.doing.ui.screens.profile.ProfileContent
 import com.ds.doing.ui.screens.tasks.TasksContent
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent(onAddTaskClicked: () -> Unit) {
     val navController = rememberNavController()

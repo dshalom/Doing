@@ -1,5 +1,6 @@
 package com.ds.doing.ui.screens.addtask
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,7 +33,11 @@ fun NewTaskContent(onBackPressed: () -> Unit) {
     var taskState by rememberNewTaskState(NewTaskState("", ""))
     Scaffold(
         topBar = { AddTaskTopBar(onBackPressed = onBackPressed) },
-        bottomBar = { AddTaskBottomBar() }
+        bottomBar = {
+            AddTaskBottomBar {
+                onBackPressed()
+            }
+        }
 
     ) { paddingValues ->
         Column(
@@ -40,7 +45,8 @@ fun NewTaskContent(onBackPressed: () -> Unit) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
             TaskName(
                 modifier = Modifier.wrapContentSize(),
@@ -55,8 +61,19 @@ fun NewTaskContent(onBackPressed: () -> Unit) {
 
             TaskName(
                 modifier = Modifier
-                    .height(200.dp),
+                    .height(360.dp),
                 "Description",
+                taskState.description
+            ) { newDescription ->
+                taskState = NewTaskState(
+                    title = taskState.title,
+                    description = newDescription
+                )
+            }
+
+            TaskName(
+                modifier = Modifier.wrapContentSize(),
+                "Date",
                 taskState.description
             ) { newDescription ->
                 taskState = NewTaskState(
@@ -67,6 +84,7 @@ fun NewTaskContent(onBackPressed: () -> Unit) {
         }
     }
 }
+
 class NewTaskState(var title: String, var description: String)
 
 @Composable
@@ -114,12 +132,12 @@ fun AddTaskTopBar(onBackPressed: () -> Unit) {
 }
 
 @Composable
-fun AddTaskBottomBar() {
+fun AddTaskBottomBar(onAddTaskClicked: () -> Unit) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
             .padding(32.dp),
-        onClick = { /*TODO*/ }
+        onClick = onAddTaskClicked
     ) {
         Text(
             text = "Add Task",

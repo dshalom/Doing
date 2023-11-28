@@ -1,8 +1,11 @@
 package com.ds.doing.ui.screens.tasks
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,23 +21,23 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.DirectionsWalk
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -43,9 +46,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
@@ -53,6 +56,10 @@ import com.ds.doing.domain.models.testTasks
 
 @Composable
 fun TasksContent(onAddTaskClicked: () -> Unit) {
+    var showBottomSheet by remember {
+        mutableStateOf(false)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -81,8 +88,11 @@ fun TasksContent(onAddTaskClicked: () -> Unit) {
                 ) {
                 }
             }
-            taskList(testTasks)
+            taskList(testTasks) {
+                showBottomSheet = true
+            }
         }
+
         FloatingActionButton(
             shape = CircleShape,
             onClick = onAddTaskClicked,
@@ -93,14 +103,100 @@ fun TasksContent(onAddTaskClicked: () -> Unit) {
             Icon(imageVector = Icons.Filled.Add, contentDescription = "icon")
         }
     }
+
+    if (showBottomSheet) {
+        TaskStatusBottomSheet {
+            showBottomSheet = false
+        }
+    }
 }
 
-fun LazyListScope.taskList(taskList: List<Task>) {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TaskStatusBottomSheet(onDismissRequest: () -> Unit) {
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
+    ModalBottomSheet(
+        sheetState = bottomSheetState,
+        onDismissRequest = onDismissRequest
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth(),
+            horizontalAlignment = CenterHorizontally
+        ) {
+            Text(
+                text = "Change status",
+                style = MaterialTheme.typography.headlineSmall
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+            val statusList = listOf(
+                TaskStatus.Todo,
+                TaskStatus.InProgress,
+                TaskStatus.Testing,
+                TaskStatus.Done
+            )
+
+            Row(
+                Modifier.fillMaxWidth(0.9f),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                statusList.forEach { status ->
+                    Column(horizontalAlignment = CenterHorizontally) {
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    color = status.color
+                                ),
+                            contentAlignment = Alignment.Center
+
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(38.dp),
+                                imageVector = status.icon,
+                                contentDescription = "Add Subject"
+                            )
+                        }
+                        Text(
+                            text = status.title,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.fillMaxWidth(0.9f),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "Delete task",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+fun LazyListScope.taskList(taskList: List<Task>, onLongClick: (Task) -> Unit) {
     items(taskList) { task ->
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .combinedClickable(
+                    onLongClick = { onLongClick(task) },
+                    onClick = {}
+                )
                 .padding(12.dp),
+
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -108,24 +204,14 @@ fun LazyListScope.taskList(taskList: List<Task>) {
                     .size(56.dp)
                     .clip(CircleShape)
                     .background(
-                        color = when (task.status) {
-                            TaskStatus.Done -> Color.Green
-                            TaskStatus.InProgress -> Color.Yellow
-                            TaskStatus.InReview -> Color.Magenta
-                            TaskStatus.Todo -> Color.Blue
-                        }
+                        color = task.status.color
                     ),
                 contentAlignment = Alignment.Center
 
             ) {
                 Icon(
                     modifier = Modifier.size(38.dp),
-                    imageVector = when (task.status) {
-                        TaskStatus.Done -> Icons.Default.Done
-                        TaskStatus.InProgress -> Icons.Default.DirectionsWalk
-                        TaskStatus.InReview -> Icons.Default.BugReport
-                        TaskStatus.Todo -> Icons.Default.EditNote
-                    },
+                    imageVector = task.status.icon,
                     contentDescription = "Add Subject"
                 )
             }
