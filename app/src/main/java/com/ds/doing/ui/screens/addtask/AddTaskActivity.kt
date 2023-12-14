@@ -1,5 +1,7 @@
-package com.ds.doing
+package com.ds.doing.ui.screens.addtask
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,13 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.ds.doing.ui.screens.addtask.AddTaskActivity
-import com.ds.doing.ui.screens.main.MainContent
 import com.ds.doing.ui.theme.DoingTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class AddTaskActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -24,11 +22,17 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainContent() {
-                        startActivity(AddTaskActivity.Companion.getAddTaskIntent(this))
+                    NewTaskContent() {
+                        finish()
                     }
                 }
             }
+        }
+    }
+
+    companion object {
+        fun getAddTaskIntent(context: Context): Intent {
+            return Intent(context, AddTaskActivity::class.java)
         }
     }
 }
