@@ -27,14 +27,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ds.doing.domain.models.Task
+import com.ds.doing.domain.models.TaskStatus
+import com.ds.doing.ui.screens.tasks.TasksState
+import com.ds.doing.ui.screens.tasks.TasksViewModel
 
 @Composable
-fun NewTaskContent(onBackPressed: () -> Unit) {
+fun NewTaskContent(
+    viewModel: AddTasksViewModel = hiltViewModel(),
+    onBackPressed: () -> Unit) {
     var taskState by rememberNewTaskState(NewTaskState("", ""))
+
     Scaffold(
         topBar = { AddTaskTopBar(onBackPressed = onBackPressed) },
         bottomBar = {
             AddTaskBottomBar {
+                viewModel.addTask(
+                    Task(id = 9,
+                        title = "title",
+                        status = TaskStatus.Done,
+                        dateDue = "data")
+                )
                 onBackPressed()
             }
         }

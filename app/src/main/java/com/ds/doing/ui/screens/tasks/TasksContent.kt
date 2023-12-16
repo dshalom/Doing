@@ -39,6 +39,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,16 +51,19 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
-import com.ds.doing.domain.models.testTasks
 
 @Composable
-fun TasksContent(onAddTaskClicked: () -> Unit) {
+fun TasksContent(
+    viewModel: TasksViewModel = hiltViewModel(),
+    onAddTaskClicked: () -> Unit) {
     var showBottomSheet by remember {
         mutableStateOf(false)
     }
 
+    val state by viewModel.tasks.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -88,7 +92,7 @@ fun TasksContent(onAddTaskClicked: () -> Unit) {
                 ) {
                 }
             }
-            taskList(testTasks) {
+            taskList(state.tasks) {
                 showBottomSheet = true
             }
         }
