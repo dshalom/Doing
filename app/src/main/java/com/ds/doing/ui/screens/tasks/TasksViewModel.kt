@@ -23,7 +23,7 @@ class TasksViewModel @Inject constructor(taskRepository: TaskRepository) : ViewM
             taskRepository.getTasksTask().collect {
                 _tasks.update { state ->
                     state.copy(
-                        tasks = it.tasks
+                        tasks = it
                     )
                 }
             }

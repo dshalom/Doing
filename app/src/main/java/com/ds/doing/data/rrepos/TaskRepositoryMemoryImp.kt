@@ -10,30 +10,30 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
 
-data class TasksHolder(val tasks: List<Task>)
 class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
 
-    private val _tasksFlow: MutableStateFlow<TasksHolder> = MutableStateFlow(TasksHolder(mutableListOf()))
+    private val _tasksFlow: MutableStateFlow<List<Task>> = MutableStateFlow(mutableListOf())
     private val tasksFlow = _tasksFlow.asStateFlow()
     override fun addTask(task: Task) {
         _tasksFlow.update { state ->
-            state.copy(
-                tasks = state.tasks + Task(9, "jj", TaskStatus.Done, "")
+            state + listOf(
+                Task(9, "gym", TaskStatus.InProgress, "12/11/2013"),
+                Task(9, "get milk", TaskStatus.Done, "12/11/2013"),
+                Task(9, "jog", TaskStatus.Todo, "12/11/2013")
             )
-
         }
     }
 
     override fun deleteTask(task: Task) {
         _tasksFlow.update { state ->
-            state.copy(
-                tasks = state.tasks - Task(9, "jj", TaskStatus.Done, "")
+            state + listOf(
+                Task(9, "jj", TaskStatus.InProgress, "12/11/2013"),
+                Task(2, "jbbj", TaskStatus.Done, "12/11/2013")
             )
-
         }
     }
 
-    override fun getTasksTask(): StateFlow<TasksHolder> {
+    override fun getTasksTask(): StateFlow<List<Task>> {
         return tasksFlow
     }
 
