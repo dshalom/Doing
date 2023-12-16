@@ -30,14 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
-import com.ds.doing.ui.screens.tasks.TasksState
-import com.ds.doing.ui.screens.tasks.TasksViewModel
 
 @Composable
 fun NewTaskContent(
     viewModel: AddTasksViewModel = hiltViewModel(),
     onBackPressed: () -> Unit) {
     var taskState by rememberNewTaskState(NewTaskState("", ""))
+
+    var t by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = { AddTaskTopBar(onBackPressed = onBackPressed) },
@@ -62,18 +62,15 @@ fun NewTaskContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            TaskName(
+            TaskItem(
                 modifier = Modifier.wrapContentSize(),
-                "Name",
-                taskState.title
+                "Title",
+                t
             ) { newTitle ->
-                taskState = NewTaskState(
-                    title = newTitle,
-                    description = taskState.description
-                )
+                t = newTitle
             }
 
-            TaskName(
+            TaskItem(
                 modifier = Modifier
                     .height(360.dp),
                 "Description",
@@ -85,7 +82,7 @@ fun NewTaskContent(
                 )
             }
 
-            TaskName(
+            TaskItem(
                 modifier = Modifier.wrapContentSize(),
                 "Date",
                 taskState.description
@@ -109,21 +106,20 @@ private fun rememberNewTaskState(mc: NewTaskState): MutableState<NewTaskState> {
 }
 
 @Composable
-private fun TaskName(
+private fun TaskItem(
     modifier: Modifier,
+    label: String,
     title: String,
-    t: String,
-    c: (String) -> Unit
+    onValueChanged: (String) -> Unit
 ) {
     OutlinedTextField(
-        value = t,
+        value = title,
         label = {
-            Text(text = title)
+            Text(text = label)
         },
         modifier = modifier.fillMaxWidth(),
-
         onValueChange = {
-            c(it)
+            onValueChanged(it)
         }
     )
 }
