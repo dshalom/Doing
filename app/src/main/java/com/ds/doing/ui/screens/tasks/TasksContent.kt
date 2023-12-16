@@ -58,9 +58,14 @@ import com.ds.doing.domain.models.TaskStatus
 @Composable
 fun TasksContent(
     viewModel: TasksViewModel = hiltViewModel(),
-    onAddTaskClicked: () -> Unit) {
+    onAddTaskClicked: () -> Unit
+) {
     var showBottomSheet by remember {
         mutableStateOf(false)
+    }
+
+    var taskToEdit: Task? by remember {
+        mutableStateOf(null)
     }
 
     val state by viewModel.tasks.collectAsState()
@@ -92,8 +97,9 @@ fun TasksContent(
                 ) {
                 }
             }
-            taskList(state.tasks) {
+            taskList(state.tasks) { task ->
                 showBottomSheet = true
+                taskToEdit = task
             }
         }
 
@@ -108,16 +114,17 @@ fun TasksContent(
         }
     }
 
-    if (showBottomSheet) {
-        TaskStatusBottomSheet {
+    taskToEdit?.also {
+        TaskStatusBottomSheet(viewModel, it) {
             showBottomSheet = false
+            taskToEdit = null
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskStatusBottomSheet(onDismissRequest: () -> Unit) {
+fun TaskStatusBottomSheet(viewModel: TasksViewModel, task: Task, onDismissRequest: () -> Unit) {
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -175,7 +182,7 @@ fun TaskStatusBottomSheet(onDismissRequest: () -> Unit) {
             }
             Spacer(modifier = Modifier.height(12.dp))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { viewModel.deleteTask(task) },
                 modifier = Modifier.fillMaxWidth(0.9f),
                 shape = RoundedCornerShape(12.dp)
             ) {

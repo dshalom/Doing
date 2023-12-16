@@ -31,23 +31,31 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
 
+class NewTaskState(var title: String, var description: String, var date: String)
+
+@Composable
+private fun rememberNewTaskState(mc: NewTaskState): MutableState<NewTaskState> {
+    return remember {
+        mutableStateOf(mc)
+    }
+}
+
 @Composable
 fun NewTaskContent(
     viewModel: AddTasksViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit) {
-    var taskState by rememberNewTaskState(NewTaskState("", ""))
-
-    var t by remember { mutableStateOf("") }
-
+    onBackPressed: () -> Unit
+) {
+    var taskState by rememberNewTaskState(NewTaskState("", "", ""))
     Scaffold(
         topBar = { AddTaskTopBar(onBackPressed = onBackPressed) },
         bottomBar = {
             AddTaskBottomBar {
                 viewModel.addTask(
-                    Task(id = 9,
-                        title = "title",
-                        status = TaskStatus.Done,
-                        dateDue = "data")
+                    Task(
+                        title = taskState.title,
+                        status = TaskStatus.Todo,
+                        dateDue = taskState.date
+                    )
                 )
                 onBackPressed()
             }
@@ -65,9 +73,14 @@ fun NewTaskContent(
             TaskItem(
                 modifier = Modifier.wrapContentSize(),
                 "Title",
-                t
+                taskState.title
             ) { newTitle ->
-                t = newTitle
+                taskState = NewTaskState(
+                    title = newTitle,
+                    description = taskState.description,
+                    date = taskState.date
+
+                )
             }
 
             TaskItem(
@@ -78,48 +91,44 @@ fun NewTaskContent(
             ) { newDescription ->
                 taskState = NewTaskState(
                     title = taskState.title,
-                    description = newDescription
+                    description = newDescription,
+                    date = taskState.date
+
                 )
             }
 
             TaskItem(
                 modifier = Modifier.wrapContentSize(),
                 "Date",
-                taskState.description
-            ) { newDescription ->
+                taskState.date
+            ) { newDate ->
                 taskState = NewTaskState(
                     title = taskState.title,
-                    description = newDescription
+                    description = taskState.description,
+                    date = newDate
+
                 )
             }
         }
     }
 }
 
-class NewTaskState(var title: String, var description: String)
-
-@Composable
-private fun rememberNewTaskState(mc: NewTaskState): MutableState<NewTaskState> {
-    return remember {
-        mutableStateOf(mc)
-    }
-}
-
 @Composable
 private fun TaskItem(
     modifier: Modifier,
-    label: String,
     title: String,
-    onValueChanged: (String) -> Unit
+    t: String,
+    c: (String) -> Unit
 ) {
     OutlinedTextField(
-        value = title,
+        value = t,
         label = {
-            Text(text = label)
+            Text(text = title)
         },
         modifier = modifier.fillMaxWidth(),
+
         onValueChange = {
-            onValueChanged(it)
+            c(it)
         }
     )
 }

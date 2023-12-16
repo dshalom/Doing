@@ -7,6 +7,4 @@ interface TaskRepository {
     fun addTask(task: Task)
     fun deleteTask(task: Task)
     fun getTasksTask(): StateFlow<List<Task>>
-
-    fun printInfo()
 }
