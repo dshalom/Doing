@@ -39,6 +39,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,16 +51,24 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
-import com.ds.doing.domain.models.testTasks
 
 @Composable
-fun TasksContent(onAddTaskClicked: () -> Unit) {
+fun TasksContent(
+    viewModel: TasksViewModel = hiltViewModel(),
+    onAddTaskClicked: () -> Unit
+) {
     var showBottomSheet by remember {
         mutableStateOf(false)
     }
 
+    var taskToEdit: Task? by remember {
+        mutableStateOf(null)
+    }
+
+    val state by viewModel.tasks.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -88,8 +97,9 @@ fun TasksContent(onAddTaskClicked: () -> Unit) {
                 ) {
                 }
             }
-            taskList(testTasks) {
+            taskList(state.tasks) { task ->
                 showBottomSheet = true
+                taskToEdit = task
             }
         }
 
@@ -104,16 +114,17 @@ fun TasksContent(onAddTaskClicked: () -> Unit) {
         }
     }
 
-    if (showBottomSheet) {
-        TaskStatusBottomSheet {
+    taskToEdit?.also {
+        TaskStatusBottomSheet(viewModel, it) {
             showBottomSheet = false
+            taskToEdit = null
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskStatusBottomSheet(onDismissRequest: () -> Unit) {
+fun TaskStatusBottomSheet(viewModel: TasksViewModel, task: Task, onDismissRequest: () -> Unit) {
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -171,7 +182,7 @@ fun TaskStatusBottomSheet(onDismissRequest: () -> Unit) {
             }
             Spacer(modifier = Modifier.height(12.dp))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { viewModel.deleteTask(task) },
                 modifier = Modifier.fillMaxWidth(0.9f),
                 shape = RoundedCornerShape(12.dp)
             ) {
