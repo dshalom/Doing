@@ -39,6 +39,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -55,6 +56,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
 
+enum class Filter {
+    All,
+    ToDo,
+    InProgress,
+    InReview,
+    Done
+}
+
 @Composable
 fun TasksContent(
     viewModel: TasksViewModel = hiltViewModel(),
@@ -69,6 +78,11 @@ fun TasksContent(
     }
 
     val state by viewModel.tasks.collectAsState()
+
+    LaunchedEffect(key1 = null) {
+        viewModel.refreshTaskList()
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -92,9 +106,17 @@ fun TasksContent(
 
             item {
                 TaskChips(
-                    titles = listOf("All", "To do", "In Progress", "In Review", "Done"),
+                    titles = Filter.values(),
                     modifier = Modifier
-                ) {
+                ) { filter ->
+
+                    when (filter) {
+                        Filter.All -> { viewModel.refreshTaskList() }
+                        Filter.ToDo -> { viewModel.refreshTaskList(TaskStatus.Todo) }
+                        Filter.InProgress -> { viewModel.refreshTaskList(TaskStatus.InProgress) }
+                        Filter.InReview -> { viewModel.refreshTaskList(TaskStatus.Testing) }
+                        Filter.Done -> { viewModel.refreshTaskList(TaskStatus.Done) }
+                    }
                 }
             }
             taskList(state.tasks) { task ->
@@ -254,9 +276,9 @@ fun LazyListScope.taskList(taskList: List<Task>, onLongClick: (Task) -> Unit) {
 
 @Composable
 fun TaskChips(
-    titles: List<String>,
+    titles: Array<Filter>,
     modifier: Modifier = Modifier,
-    onTaskTypeSelected: (Int) -> Unit
+    onTaskTypeSelected: (Filter) -> Unit
 ) {
     val scrollState = rememberScrollState()
     var selectedIndex by rememberSaveable {
@@ -269,9 +291,9 @@ fun TaskChips(
             .horizontalScroll(scrollState)
     ) {
         titles.forEachIndexed { index, title ->
-            TaskChip(title, selectedIndex == index) {
+            TaskChip(title.name, selectedIndex == index) {
                 selectedIndex = index
-                onTaskTypeSelected(index)
+                onTaskTypeSelected(title)
             }
         }
     }
