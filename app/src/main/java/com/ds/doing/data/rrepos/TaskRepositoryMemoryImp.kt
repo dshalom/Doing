@@ -15,10 +15,7 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
     private val tasksFlow = _tasksFlow.asStateFlow()
     override fun addTask(task: Task) {
         _tasksFlow.update { state ->
-            state + listOf(
-                task,
-                Task("gym", TaskStatus.Done, "12/11/2013")
-            )
+            state + task
         }
     }
 
@@ -40,6 +37,18 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
         }
     }
 
+    override fun updateTask(taskToUpdate: Task) {
+        _tasksFlow.update { state ->
+            state.map {
+                if (it == taskToUpdate) {
+                    taskToUpdate
+                } else {
+                    it
+                }
+            }
+        }
+    }
+
     override fun getTasksTask(): StateFlow<List<Task>> {
         return tasksFlow
     }
@@ -49,21 +58,28 @@ fun getTestData(): List<Task> {
     return listOf(
         Task(
             "task 1",
+            "dec1 ",
             TaskStatus.Todo,
             "sometime"
         ),
         Task(
             "task 2",
+            "dec2 ",
+
             TaskStatus.InProgress,
             "sometime"
         ),
         Task(
             "task 3",
+            "dec3 ",
+
             TaskStatus.Testing,
             "sometime"
         ),
         Task(
             "task 4",
+            "dec4",
+
             TaskStatus.Done,
             "sometime"
         )

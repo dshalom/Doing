@@ -12,4 +12,8 @@ class AddTasksViewModel @Inject constructor(val taskRepository: TaskRepository) 
     fun addTask(task: Task) {
         taskRepository.addTask(task)
     }
+
+    fun updateTask(task: Task) {
+        taskRepository.updateTask(task)
+    }
 }

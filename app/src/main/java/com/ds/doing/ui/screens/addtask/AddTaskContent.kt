@@ -31,34 +31,65 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
 
-class NewTaskState(var title: String, var description: String, var date: String)
+class NewTaskState(
+    var title: String,
+    var description: String,
+    var status: TaskStatus,
+    var date: String
+)
 
 @Composable
-private fun rememberNewTaskState(mc: NewTaskState): MutableState<NewTaskState> {
+private fun rememberNewTaskState(newTask: NewTaskState): MutableState<NewTaskState> {
     return remember {
-        mutableStateOf(mc)
+        mutableStateOf(newTask)
     }
 }
 
 @Composable
 fun NewTaskContent(
     viewModel: AddTasksViewModel = hiltViewModel(),
+    title: String,
+    description: String,
+    status: String,
+    dateDue: String,
     onBackPressed: () -> Unit
 ) {
-    var taskState by rememberNewTaskState(NewTaskState("", "", ""))
+    var taskState by rememberNewTaskState(
+        NewTaskState(
+            title,
+            description,
+            TaskStatus.Todo,
+            dateDue
+        )
+    )
     Scaffold(
         topBar = { AddTaskTopBar(onBackPressed = onBackPressed) },
         bottomBar = {
-            AddTaskBottomBar {
-                viewModel.addTask(
-                    Task(
-                        title = taskState.title,
-                        status = TaskStatus.Todo,
-                        dateDue = taskState.date
+            AddTaskBottomBar(
+                title,
+                onAddTaskClicked = {
+                    viewModel.addTask(
+                        Task(
+                            title = taskState.title,
+                            description = taskState.description,
+                            status = TaskStatus.Todo,
+                            dateDue = taskState.date
+                        )
                     )
-                )
-                onBackPressed()
-            }
+                    onBackPressed()
+                },
+                onEditTaskClicked = {
+                    viewModel.updateTask(
+                        Task(
+                            title = taskState.title,
+                            description = taskState.description,
+                            status = TaskStatus.Todo,
+                            dateDue = taskState.date
+                        )
+                    )
+                    onBackPressed()
+                }
+            )
         }
 
     ) { paddingValues ->
@@ -78,6 +109,7 @@ fun NewTaskContent(
                 taskState = NewTaskState(
                     title = newTitle,
                     description = taskState.description,
+                    status = TaskStatus.Todo,
                     date = taskState.date
 
                 )
@@ -92,6 +124,7 @@ fun NewTaskContent(
                 taskState = NewTaskState(
                     title = taskState.title,
                     description = newDescription,
+                    status = TaskStatus.Todo,
                     date = taskState.date
 
                 )
@@ -105,8 +138,8 @@ fun NewTaskContent(
                 taskState = NewTaskState(
                     title = taskState.title,
                     description = taskState.description,
+                    status = TaskStatus.Todo,
                     date = newDate
-
                 )
             }
         }
@@ -116,19 +149,18 @@ fun NewTaskContent(
 @Composable
 private fun TaskItem(
     modifier: Modifier,
+    label: String,
     title: String,
-    t: String,
-    c: (String) -> Unit
+    onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
-        value = t,
+        value = title,
         label = {
-            Text(text = title)
+            Text(text = label)
         },
         modifier = modifier.fillMaxWidth(),
-
         onValueChange = {
-            c(it)
+            onValueChange(it)
         }
     )
 }
@@ -151,15 +183,19 @@ fun AddTaskTopBar(onBackPressed: () -> Unit) {
 }
 
 @Composable
-fun AddTaskBottomBar(onAddTaskClicked: () -> Unit) {
+fun AddTaskBottomBar(
+    title: String,
+    onAddTaskClicked: () -> Unit,
+    onEditTaskClicked: () -> Unit
+) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
             .padding(32.dp),
-        onClick = onAddTaskClicked
+        onClick = { if (title == "") onAddTaskClicked() else onEditTaskClicked() }
     ) {
         Text(
-            text = "Add Task",
+            text = if (title == "") "Add task" else "Save Changes",
             modifier = Modifier.padding(16.dp),
             style = MaterialTheme.typography.bodyLarge
         )

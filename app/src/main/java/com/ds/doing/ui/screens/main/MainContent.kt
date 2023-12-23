@@ -17,13 +17,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ds.doing.domain.models.Task
 import com.ds.doing.ui.screens.Screen
 import com.ds.doing.ui.screens.items
 import com.ds.doing.ui.screens.profile.ProfileContent
 import com.ds.doing.ui.screens.tasks.TasksContent
 
 @Composable
-fun MainContent(onAddTaskClicked: () -> Unit) {
+fun MainContent(onAddTaskClicked: () -> Unit, onEditTaskClicked: (Task) -> Unit) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -36,7 +37,10 @@ fun MainContent(onAddTaskClicked: () -> Unit) {
             Modifier.padding(paddingValues)
         ) {
             composable(Screen.TasksScreen.route) {
-                TasksContent(onAddTaskClicked = onAddTaskClicked)
+                TasksContent(
+                    onAddTaskClicked = onAddTaskClicked,
+                    onEditTaskClicked = onEditTaskClicked
+                )
             }
             composable(Screen.ProfileScreen.route) { ProfileContent() }
         }

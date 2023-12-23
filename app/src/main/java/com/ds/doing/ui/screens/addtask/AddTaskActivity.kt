@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.ds.doing.domain.models.Task
 import com.ds.doing.ui.theme.DoingTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,13 +19,20 @@ class AddTaskActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DoingTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
-
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NewTaskContent() {
+                    val title = intent.getStringExtra("title")
+                    val description = intent.getStringExtra("description")
+                    val status = intent.getStringExtra("status")
+                    val dateDue = intent.getStringExtra("dateDue")
+                    NewTaskContent(
+                        title = title ?: "",
+                        description = description ?: "",
+                        status = status ?: "",
+                        dateDue = dateDue ?: ""
+                    ) {
                         finish()
                     }
                 }
@@ -35,6 +43,15 @@ class AddTaskActivity : ComponentActivity() {
     companion object {
         fun getAddTaskIntent(context: Context): Intent {
             return Intent(context, AddTaskActivity::class.java)
+        }
+
+        fun getEditTaskIntent(context: Context, task: Task): Intent {
+            return Intent(context, AddTaskActivity::class.java).also {
+                it.putExtra("title", task.title)
+                it.putExtra("description", task.description)
+                it.putExtra("status", "status")
+                it.putExtra("dateDue", task.dateDue)
+            }
         }
     }
 }
