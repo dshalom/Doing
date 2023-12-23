@@ -17,7 +17,7 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
         _tasksFlow.update { state ->
             state + listOf(
                 task,
-                Task("gym", TaskStatus.InProgress, "12/11/2013")
+                Task("gym", TaskStatus.Done, "12/11/2013")
             )
         }
     }
