@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TasksViewModel @Inject constructor(val taskRepository: TaskRepository) : ViewModel() {
+class TasksViewModel @Inject constructor(private val taskRepository: TaskRepository) : ViewModel() {
 
     private val _tasks: MutableStateFlow<TasksState> = MutableStateFlow(TasksState())
     private var job: Job? = null
@@ -35,6 +35,10 @@ class TasksViewModel @Inject constructor(val taskRepository: TaskRepository) : V
                 }
             }
         }
+    }
+
+    fun setTaskStatus(taskToUndate: Task, status: TaskStatus) {
+        taskRepository.setTaskStatus(taskToUndate, status)
     }
 
     fun deleteTask(task: Task) {
