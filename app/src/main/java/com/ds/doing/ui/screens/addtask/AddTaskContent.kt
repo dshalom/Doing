@@ -32,6 +32,7 @@ import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
 
 class NewTaskState(
+    val id: Int,
     var title: String,
     var description: String,
     var status: TaskStatus,
@@ -48,6 +49,7 @@ private fun rememberNewTaskState(newTask: NewTaskState): MutableState<NewTaskSta
 @Composable
 fun NewTaskContent(
     viewModel: AddTasksViewModel = hiltViewModel(),
+    id: Int,
     title: String,
     description: String,
     status: String,
@@ -56,6 +58,7 @@ fun NewTaskContent(
 ) {
     var taskState by rememberNewTaskState(
         NewTaskState(
+            id,
             title,
             description,
             TaskStatus.Todo,
@@ -70,6 +73,7 @@ fun NewTaskContent(
                 onAddTaskClicked = {
                     viewModel.addTask(
                         Task(
+                            viewModel.getNextId(),
                             title = taskState.title,
                             description = taskState.description,
                             status = TaskStatus.Todo,
@@ -81,6 +85,7 @@ fun NewTaskContent(
                 onEditTaskClicked = {
                     viewModel.updateTask(
                         Task(
+                            taskState.id,
                             title = taskState.title,
                             description = taskState.description,
                             status = TaskStatus.Todo,
@@ -107,6 +112,7 @@ fun NewTaskContent(
                 taskState.title
             ) { newTitle ->
                 taskState = NewTaskState(
+                    id = taskState.id,
                     title = newTitle,
                     description = taskState.description,
                     status = TaskStatus.Todo,
@@ -122,6 +128,7 @@ fun NewTaskContent(
                 taskState.description
             ) { newDescription ->
                 taskState = NewTaskState(
+                    id = taskState.id,
                     title = taskState.title,
                     description = newDescription,
                     status = TaskStatus.Todo,
@@ -136,6 +143,7 @@ fun NewTaskContent(
                 taskState.date
             ) { newDate ->
                 taskState = NewTaskState(
+                    id = taskState.id,
                     title = taskState.title,
                     description = taskState.description,
                     status = TaskStatus.Todo,

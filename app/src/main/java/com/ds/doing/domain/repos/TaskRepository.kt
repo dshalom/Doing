@@ -5,6 +5,9 @@ import com.ds.doing.domain.models.TaskStatus
 import kotlinx.coroutines.flow.StateFlow
 
 interface TaskRepository {
+
+    fun getNewId(): Int
+
     fun addTask(task: Task)
     fun deleteTask(task: Task)
 

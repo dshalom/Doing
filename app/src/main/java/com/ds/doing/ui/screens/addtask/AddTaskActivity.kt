@@ -23,11 +23,13 @@ class AddTaskActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val id = intent.getIntExtra("id", 0)
                     val title = intent.getStringExtra("title")
                     val description = intent.getStringExtra("description")
                     val status = intent.getStringExtra("status")
                     val dateDue = intent.getStringExtra("dateDue")
                     NewTaskContent(
+                        id = id,
                         title = title ?: "",
                         description = description ?: "",
                         status = status ?: "",
@@ -47,6 +49,7 @@ class AddTaskActivity : ComponentActivity() {
 
         fun getEditTaskIntent(context: Context, task: Task): Intent {
             return Intent(context, AddTaskActivity::class.java).also {
+                it.putExtra("id", task.id)
                 it.putExtra("title", task.title)
                 it.putExtra("description", task.description)
                 it.putExtra("status", "status")

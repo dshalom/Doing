@@ -11,9 +11,16 @@ import javax.inject.Inject
 
 class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
 
+    private var id: Int = 10
+
     private val _tasksFlow: MutableStateFlow<List<Task>> = MutableStateFlow(getTestData())
     private val tasksFlow = _tasksFlow.asStateFlow()
+    override fun getNewId(): Int {
+        return id
+    }
+
     override fun addTask(task: Task) {
+        ++id
         _tasksFlow.update { state ->
             state + task
         }
@@ -21,14 +28,16 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
 
     override fun deleteTask(task: Task) {
         _tasksFlow.update { state ->
-            state - task
+            state.filter {
+                it.id != task.id
+            }
         }
     }
 
     override fun setTaskStatus(taskToUpdate: Task, status: TaskStatus) {
         _tasksFlow.update { state ->
             state.map {
-                if (it == taskToUpdate) {
+                if (it.id == taskToUpdate.id) {
                     it.copy(status = status)
                 } else {
                     it
@@ -40,7 +49,7 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
     override fun updateTask(taskToUpdate: Task) {
         _tasksFlow.update { state ->
             state.map {
-                if (it == taskToUpdate) {
+                if (it.id == taskToUpdate.id) {
                     taskToUpdate
                 } else {
                     it
@@ -57,29 +66,33 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
 fun getTestData(): List<Task> {
     return listOf(
         Task(
+            1,
             "task 1",
             "dec1 ",
             TaskStatus.Todo,
             "sometime"
         ),
         Task(
+            2,
             "task 2",
-            "dec2 ",
 
+            "dec2 ",
             TaskStatus.InProgress,
             "sometime"
         ),
         Task(
+            3,
             "task 3",
-            "dec3 ",
 
+            "dec3 ",
             TaskStatus.Testing,
             "sometime"
         ),
         Task(
+            4,
             "task 4",
-            "dec4",
 
+            "dec4",
             TaskStatus.Done,
             "sometime"
         )

@@ -7,8 +7,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class AddTasksViewModel @Inject constructor(val taskRepository: TaskRepository) : ViewModel() {
+class AddTasksViewModel @Inject constructor(private val taskRepository: TaskRepository) : ViewModel() {
 
+    fun getNextId() = taskRepository.getNewId()
     fun addTask(task: Task) {
         taskRepository.addTask(task)
     }
