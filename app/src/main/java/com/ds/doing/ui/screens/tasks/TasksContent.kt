@@ -57,11 +57,7 @@ import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
 
 enum class Filter {
-    All,
-    ToDo,
-    InProgress,
-    InReview,
-    Done
+    All, ToDo, InProgress, InReview, Done
 }
 
 @Composable
@@ -89,8 +85,7 @@ fun TasksContent(
             .padding(8.dp)
     ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             item {
                 DoingSearch()
@@ -111,18 +106,41 @@ fun TasksContent(
                 ) { filter ->
 
                     when (filter) {
-                        Filter.All -> { viewModel.refreshTaskList() }
-                        Filter.ToDo -> { viewModel.refreshTaskList(TaskStatus.Todo) }
-                        Filter.InProgress -> { viewModel.refreshTaskList(TaskStatus.InProgress) }
-                        Filter.InReview -> { viewModel.refreshTaskList(TaskStatus.Testing) }
-                        Filter.Done -> { viewModel.refreshTaskList(TaskStatus.Done) }
+                        Filter.All -> {
+                            viewModel.refreshTaskList()
+                        }
+
+                        Filter.ToDo -> {
+                            viewModel.refreshTaskList(TaskStatus.Todo)
+                        }
+
+                        Filter.InProgress -> {
+                            viewModel.refreshTaskList(TaskStatus.InProgress)
+                        }
+
+                        Filter.InReview -> {
+                            viewModel.refreshTaskList(TaskStatus.Testing)
+                        }
+
+                        Filter.Done -> {
+                            viewModel.refreshTaskList(TaskStatus.Done)
+                        }
                     }
                 }
             }
-            taskList(state.tasks) { task ->
-                showBottomSheet = true
-                taskToEdit = task
-            }
+            taskList(
+                state.tasks,
+
+                // todo this should allow task to be edited
+                onLongClicked = { task ->
+                    showBottomSheet = true
+                    taskToEdit = task
+                },
+                onMoreClicked = { task ->
+                    showBottomSheet = true
+                    taskToEdit = task
+                }
+            )
         }
 
         FloatingActionButton(
@@ -156,8 +174,7 @@ fun TaskStatusBottomSheet(viewModel: TasksViewModel, task: Task, onDismissReques
         onDismissRequest = onDismissRequest
     ) {
         Column(
-            Modifier
-                .fillMaxWidth(),
+            Modifier.fillMaxWidth(),
             horizontalAlignment = CenterHorizontally
         ) {
             Text(
@@ -178,7 +195,13 @@ fun TaskStatusBottomSheet(viewModel: TasksViewModel, task: Task, onDismissReques
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 statusList.forEach { status ->
-                    Column(horizontalAlignment = CenterHorizontally) {
+                    Column(
+                        horizontalAlignment = CenterHorizontally,
+                        modifier = Modifier.clickable {
+                            viewModel.setTaskStatus(task, status)
+                            onDismissRequest()
+                        }
+                    ) {
                         Box(
                             modifier = Modifier
                                 .size(56.dp)
@@ -204,7 +227,10 @@ fun TaskStatusBottomSheet(viewModel: TasksViewModel, task: Task, onDismissReques
             }
             Spacer(modifier = Modifier.height(12.dp))
             Button(
-                onClick = { viewModel.deleteTask(task) },
+                onClick = {
+                    viewModel.deleteTask(task)
+                    onDismissRequest()
+                },
                 modifier = Modifier.fillMaxWidth(0.9f),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -219,16 +245,17 @@ fun TaskStatusBottomSheet(viewModel: TasksViewModel, task: Task, onDismissReques
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-fun LazyListScope.taskList(taskList: List<Task>, onLongClick: (Task) -> Unit) {
+fun LazyListScope.taskList(
+    taskList: List<Task>,
+    onMoreClicked: (Task) -> Unit,
+    onLongClicked: (Task) -> Unit
+) {
     items(taskList) { task ->
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .combinedClickable(
-                    onLongClick = { onLongClick(task) },
-                    onClick = {}
-                )
-                .padding(12.dp),
+                .padding(12.dp)
+                .combinedClickable(onLongClick = { onLongClicked(task) }, onClick = {}),
 
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -261,8 +288,13 @@ fun LazyListScope.taskList(taskList: List<Task>, onLongClick: (Task) -> Unit) {
             }
 
             Box(
-                modifier = Modifier.size(30.dp),
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable {
+                        onMoreClicked(task)
+                    },
                 contentAlignment = Alignment.CenterEnd
+
             ) {
                 Icon(
                     modifier = Modifier.size(40.dp),
@@ -302,18 +334,14 @@ fun TaskChips(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskChip(title: String, selected: Boolean, onClicked: () -> Unit) {
-    ElevatedFilterChip(
-        selected = selected,
-        onClick = {
-            onClicked()
-        },
-        label = {
+    ElevatedFilterChip(selected = selected, onClick = {
+        onClicked()
+    }, label = {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium
             )
-        }
-    )
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -341,16 +369,12 @@ private fun DoingSearch() {
 
     ) {
         searchHistory.takeLast(3).forEach { item ->
-            ListItem(
-                modifier = Modifier.clickable { query = item },
-                headlineContent = {
-                    Text(
-                        text = item,
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                },
-                leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) }
-            )
+            ListItem(modifier = Modifier.clickable { query = item }, headlineContent = {
+                Text(
+                    text = item,
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }, leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) })
         }
     }
 }

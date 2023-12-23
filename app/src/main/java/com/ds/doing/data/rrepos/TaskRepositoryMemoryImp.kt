@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
 
-    private val _tasksFlow: MutableStateFlow<List<Task>> = MutableStateFlow(mutableListOf())
+    private val _tasksFlow: MutableStateFlow<List<Task>> = MutableStateFlow(getTestData())
     private val tasksFlow = _tasksFlow.asStateFlow()
     override fun addTask(task: Task) {
         _tasksFlow.update { state ->
@@ -28,7 +28,44 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
         }
     }
 
+    override fun setTaskStatus(taskToUpdate: Task, status: TaskStatus) {
+        _tasksFlow.update { state ->
+            state.map {
+                if (it == taskToUpdate) {
+                    it.copy(status = status)
+                } else {
+                    it
+                }
+            }
+        }
+    }
+
     override fun getTasksTask(): StateFlow<List<Task>> {
         return tasksFlow
     }
+}
+
+fun getTestData(): List<Task> {
+    return listOf(
+        Task(
+            "task 1",
+            TaskStatus.Todo,
+            "sometime"
+        ),
+        Task(
+            "task 2",
+            TaskStatus.InProgress,
+            "sometime"
+        ),
+        Task(
+            "task 3",
+            TaskStatus.Testing,
+            "sometime"
+        ),
+        Task(
+            "task 4",
+            TaskStatus.Done,
+            "sometime"
+        )
+    )
 }

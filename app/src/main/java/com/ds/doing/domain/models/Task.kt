@@ -19,6 +19,6 @@ sealed class TaskStatus(val title: String, val icon: ImageVector, val color: Col
 
 data class Task(
     val title: String,
-    val status: TaskStatus,
+    var status: TaskStatus,
     val dateDue: String
 )
