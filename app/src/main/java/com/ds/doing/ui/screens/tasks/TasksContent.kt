@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -26,15 +25,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -55,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
+import com.ds.doing.ui.screens.shared.MyBox
 
 enum class Filter {
     All, ToDo, InProgress, InReview, Done
@@ -63,101 +62,105 @@ enum class Filter {
 @Composable
 fun TasksContent(
     viewModel: TasksViewModel = hiltViewModel(),
+    searchViewModel: SearchViewModel = hiltViewModel(),
     onAddTaskClicked: () -> Unit,
     onEditTaskClicked: (Task) -> Unit
 ) {
-    var showBottomSheet by remember {
-        mutableStateOf(false)
-    }
+    Scaffold(
+        modifier = Modifier.padding(horizontal = 8.dp),
+        topBar = {
+            DoingSearch(searchViewModel)
+        }
 
-    var taskToEdit: Task? by remember {
-        mutableStateOf(null)
-    }
+    ) { paddingValues ->
+        var showBottomSheet by remember {
+            mutableStateOf(false)
+        }
 
-    val state by viewModel.tasks.collectAsState()
+        var taskToEdit: Task? by remember {
+            mutableStateOf(null)
+        }
 
-    LaunchedEffect(key1 = null) {
-        viewModel.refreshTaskList()
-    }
+        val state by viewModel.tasks.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
+        LaunchedEffect(key1 = null) {
+            viewModel.refreshTaskList()
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            item {
-                DoingSearch()
-            }
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Tasks",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                }
 
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Tasks",
-                    style = MaterialTheme.typography.headlineLarge
-                )
-            }
+                item {
+                    TaskChips(
+                        titles = Filter.values(),
+                        modifier = Modifier
+                    ) { filter ->
 
-            item {
-                TaskChips(
-                    titles = Filter.values(),
-                    modifier = Modifier
-                ) { filter ->
+                        when (filter) {
+                            Filter.All -> {
+                                viewModel.refreshTaskList()
+                            }
 
-                    when (filter) {
-                        Filter.All -> {
-                            viewModel.refreshTaskList()
-                        }
+                            Filter.ToDo -> {
+                                viewModel.refreshTaskList(TaskStatus.Todo)
+                            }
 
-                        Filter.ToDo -> {
-                            viewModel.refreshTaskList(TaskStatus.Todo)
-                        }
+                            Filter.InProgress -> {
+                                viewModel.refreshTaskList(TaskStatus.InProgress)
+                            }
 
-                        Filter.InProgress -> {
-                            viewModel.refreshTaskList(TaskStatus.InProgress)
-                        }
+                            Filter.InReview -> {
+                                viewModel.refreshTaskList(TaskStatus.Testing)
+                            }
 
-                        Filter.InReview -> {
-                            viewModel.refreshTaskList(TaskStatus.Testing)
-                        }
-
-                        Filter.Done -> {
-                            viewModel.refreshTaskList(TaskStatus.Done)
+                            Filter.Done -> {
+                                viewModel.refreshTaskList(TaskStatus.Done)
+                            }
                         }
                     }
                 }
+                taskList(
+                    state.tasks,
+                    // todo this should allow task to be edited
+                    onLongClicked = { task ->
+                        onEditTaskClicked(task)
+                    },
+                    onMoreClicked = { task ->
+                        showBottomSheet = true
+                        taskToEdit = task
+                    }
+                )
             }
-            taskList(
-                state.tasks,
 
-                // todo this should allow task to be edited
-                onLongClicked = { task ->
-                    onEditTaskClicked(task)
-                },
-                onMoreClicked = { task ->
-                    showBottomSheet = true
-                    taskToEdit = task
-                }
-            )
+            FloatingActionButton(
+                shape = CircleShape,
+                onClick = onAddTaskClicked,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(20.dp)
+            ) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "icon")
+            }
         }
 
-        FloatingActionButton(
-            shape = CircleShape,
-            onClick = onAddTaskClicked,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(20.dp)
-        ) {
-            Icon(imageVector = Icons.Filled.Add, contentDescription = "icon")
-        }
-    }
-
-    taskToEdit?.also {
-        TaskStatusBottomSheet(viewModel, it) {
-            showBottomSheet = false
-            taskToEdit = null
+        taskToEdit?.also {
+            TaskStatusBottomSheet(viewModel, it) {
+                showBottomSheet = false
+                taskToEdit = null
+            }
         }
     }
 }
@@ -259,33 +262,7 @@ fun LazyListScope.taskList(
 
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(
-                        color = task.status.color
-                    ),
-                contentAlignment = Alignment.Center
-
-            ) {
-                Icon(
-                    modifier = Modifier.size(38.dp),
-                    imageVector = task.status.icon,
-                    contentDescription = "Add Subject"
-                )
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = task.title,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-                Text(
-                    text = task.dateDue,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-            }
+            MyBox(task)
 
             Box(
                 modifier = Modifier
@@ -346,16 +323,19 @@ fun TaskChip(title: String, selected: Boolean, onClicked: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DoingSearch() {
+private fun DoingSearch(searchViewModel: SearchViewModel) {
     var query by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    val searchHistory = listOf("Android", "Kotlin", "Compose", "Material Design", "GPT-4")
+
+    val resultTasks by searchViewModel.resultTasks.collectAsState()
 
     SearchBar(
         query = query,
-        onQueryChange = { query = it },
-        onSearch = { newQuery ->
-            println("Performing search on query: $newQuery")
+        onQueryChange = {
+            query = it
+            searchViewModel.onSearchTextChanged(it)
+        },
+        onSearch = {
         },
         active = active,
         onActiveChange = { active = it },
@@ -368,13 +348,20 @@ private fun DoingSearch() {
         }
 
     ) {
-        searchHistory.takeLast(3).forEach { item ->
-            ListItem(modifier = Modifier.clickable { query = item }, headlineContent = {
-                Text(
-                    text = item,
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }, leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) })
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            items(resultTasks) { task ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    MyBox(task = task)
+                }
+            }
         }
     }
 }

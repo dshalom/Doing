@@ -14,5 +14,5 @@ interface TaskRepository {
     fun setTaskStatus(taskToUpdate: Task, status: TaskStatus)
     fun updateTask(taskToUpdate: Task)
 
-    fun getTasksTask(): StateFlow<List<Task>>
+    fun getTasks(): StateFlow<List<Task>>
 }

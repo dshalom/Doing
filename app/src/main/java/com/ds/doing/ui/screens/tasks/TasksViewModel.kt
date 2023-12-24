@@ -23,7 +23,7 @@ class TasksViewModel @Inject constructor(private val taskRepository: TaskReposit
     fun refreshTaskList(taskStatus: TaskStatus? = null) {
         job?.cancel()
         job = viewModelScope.launch {
-            taskRepository.getTasksTask().collect { tasks ->
+            taskRepository.getTasks().collect { tasks ->
                 _tasks.update { state ->
                     taskStatus?.let { taskFilter ->
                         state.copy(

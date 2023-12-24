@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import timber.log.Timber
 
 sealed class TaskStatus(val title: String, val icon: ImageVector, val color: Color) {
     object Todo : TaskStatus(title = "To do", Icons.Default.EditNote, color = Color.Blue)
@@ -24,3 +25,19 @@ data class Task(
     var status: TaskStatus,
     val dateDue: String
 )
+
+fun Task.matchesSearch(searchText: String): Boolean {
+    val matchingCombinations = listOf(
+        title,
+        description
+    )
+    return matchingCombinations.any {
+        val r = it.contains(
+            searchText,
+            ignoreCase = true
+        )
+        Timber.i("dsds looking if $it contains $searchText  r=$r")
+
+        return r
+    }
+}

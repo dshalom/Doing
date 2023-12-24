@@ -1,6 +1,6 @@
 package com.ds.doing.di
 
-import com.ds.doing.data.rrepos.TaskRepositoryMemoryImp
+import com.ds.doing.data.repos.TaskRepositoryMemoryImp
 import com.ds.doing.domain.repos.TaskRepository
 import dagger.Binds
 import dagger.Module
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 abstract class AppModule {
     @Binds
     @Singleton
-    abstract fun bindsWeatherRepository(
+    abstract fun bindsTaskRepository(
         tasksRepository: TaskRepositoryMemoryImp
     ): TaskRepository
 }
