@@ -68,6 +68,7 @@ fun TasksContent(
     onEditTaskClicked: (Task) -> Unit
 ) {
     Scaffold(
+        modifier = Modifier.padding(horizontal = 8.dp),
         topBar = {
             DoingSearch()
         }
