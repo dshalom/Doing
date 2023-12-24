@@ -24,9 +24,24 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainContent() {
-                        startActivity(AddTaskActivity.Companion.getAddTaskIntent(this))
-                    }
+                    MainContent(
+                        onAddTaskClicked = {
+                            startActivity(
+                                AddTaskActivity.getAddTaskIntent(
+                                    this
+                                )
+                            )
+                        },
+                        onEditTaskClicked = {
+                            startActivity(
+                                AddTaskActivity.getEditTaskIntent(
+                                    this,
+                                    it
+                                )
+                            )
+                        }
+
+                    )
                 }
             }
         }

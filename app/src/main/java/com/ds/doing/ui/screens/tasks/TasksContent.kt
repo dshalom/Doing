@@ -63,7 +63,8 @@ enum class Filter {
 @Composable
 fun TasksContent(
     viewModel: TasksViewModel = hiltViewModel(),
-    onAddTaskClicked: () -> Unit
+    onAddTaskClicked: () -> Unit,
+    onEditTaskClicked: (Task) -> Unit
 ) {
     var showBottomSheet by remember {
         mutableStateOf(false)
@@ -133,8 +134,7 @@ fun TasksContent(
 
                 // todo this should allow task to be edited
                 onLongClicked = { task ->
-                    showBottomSheet = true
-                    taskToEdit = task
+                    onEditTaskClicked(task)
                 },
                 onMoreClicked = { task ->
                     showBottomSheet = true
