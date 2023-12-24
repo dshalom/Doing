@@ -1,4 +1,4 @@
-package com.ds.doing.data.rrepos
+package com.ds.doing.data.repos
 
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
@@ -58,7 +58,7 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
         }
     }
 
-    override fun getTasksTask(): StateFlow<List<Task>> {
+    override fun getTasks(): StateFlow<List<Task>> {
         return tasksFlow
     }
 }
