@@ -147,7 +147,6 @@ fun TasksContent(
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "icon")
             }
         }
-
         state.task?.also {
             TaskStatusBottomSheet(viewModel, it) {
                 viewModel.setTaskToEdit(null)
