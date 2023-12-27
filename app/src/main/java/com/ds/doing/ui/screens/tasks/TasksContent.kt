@@ -223,11 +223,11 @@ fun TaskChip(title: String, selected: Boolean, onClicked: () -> Unit) {
     ElevatedFilterChip(selected = selected, onClick = {
         onClicked()
     }, label = {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium
-        )
-    })
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium
+            )
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

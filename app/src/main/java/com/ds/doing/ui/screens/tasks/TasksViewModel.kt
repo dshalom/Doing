@@ -51,6 +51,5 @@ class TasksViewModel @Inject constructor(private val taskRepository: TaskReposit
                 task = task
             )
         }
-
     }
 }
