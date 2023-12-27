@@ -16,15 +16,15 @@ import javax.inject.Inject
 @HiltViewModel
 class TasksViewModel @Inject constructor(private val taskRepository: TaskRepository) : ViewModel() {
 
-    private val _tasks: MutableStateFlow<TasksState> = MutableStateFlow(TasksState())
+    private val _state: MutableStateFlow<TasksState> = MutableStateFlow(TasksState())
     private var job: Job? = null
-    val tasks = _tasks.asStateFlow()
+    val state = _state.asStateFlow()
 
     fun refreshTaskList(taskStatus: TaskStatus? = null) {
         job?.cancel()
         job = viewModelScope.launch {
             taskRepository.getTasks().collect { tasks ->
-                _tasks.update { state ->
+                _state.update { state ->
                     taskStatus?.let { taskFilter ->
                         state.copy(
                             tasks = tasks.filter { it.status == taskFilter }
@@ -43,5 +43,14 @@ class TasksViewModel @Inject constructor(private val taskRepository: TaskReposit
 
     fun deleteTask(task: Task) {
         taskRepository.deleteTask(task)
+    }
+
+    fun setTaskToEdit(task: Task?) {
+        _state.update {
+            it.copy(
+                task = task
+            )
+        }
+
     }
 }

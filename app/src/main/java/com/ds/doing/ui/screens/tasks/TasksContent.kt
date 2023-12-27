@@ -73,15 +73,8 @@ fun TasksContent(
         }
 
     ) { paddingValues ->
-        var showBottomSheet by remember {
-            mutableStateOf(false)
-        }
 
-        var taskToEdit: Task? by remember {
-            mutableStateOf(null)
-        }
-
-        val state by viewModel.tasks.collectAsState()
+        val state by viewModel.state.collectAsState()
 
         LaunchedEffect(key1 = null) {
             viewModel.refreshTaskList()
@@ -139,8 +132,7 @@ fun TasksContent(
                         onEditTaskClicked(task)
                     },
                     onMoreClicked = { task ->
-                        showBottomSheet = true
-                        taskToEdit = task
+                        viewModel.setTaskToEdit(task)
                     }
                 )
             }
@@ -156,10 +148,128 @@ fun TasksContent(
             }
         }
 
-        taskToEdit?.also {
+        state.task?.also {
             TaskStatusBottomSheet(viewModel, it) {
-                showBottomSheet = false
-                taskToEdit = null
+                viewModel.setTaskToEdit(null)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+fun LazyListScope.taskList(
+    taskList: List<Task>,
+    onMoreClicked: (Task) -> Unit,
+    onLongClicked: (Task) -> Unit
+) {
+    items(taskList) { task ->
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+                .combinedClickable(onLongClick = { onLongClicked(task) }, onClick = {}),
+
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            MyBox(task)
+
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable {
+                        onMoreClicked(task)
+                    },
+                contentAlignment = Alignment.CenterEnd
+
+            ) {
+                Icon(
+                    modifier = Modifier.size(40.dp),
+                    imageVector = Icons.Default.MoreHoriz,
+                    contentDescription = "More"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TaskChips(
+    titles: Array<Filter>,
+    modifier: Modifier = Modifier,
+    onTaskTypeSelected: (Filter) -> Unit
+) {
+    val scrollState = rememberScrollState()
+    var selectedIndex by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState)
+    ) {
+        titles.forEachIndexed { index, title ->
+            TaskChip(title.name, selectedIndex == index) {
+                selectedIndex = index
+                onTaskTypeSelected(title)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TaskChip(title: String, selected: Boolean, onClicked: () -> Unit) {
+    ElevatedFilterChip(selected = selected, onClick = {
+        onClicked()
+    }, label = {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium
+        )
+    })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DoingSearch(searchViewModel: SearchViewModel) {
+    var query by remember { mutableStateOf("") }
+    var active by remember { mutableStateOf(false) }
+
+    val resultTasks by searchViewModel.resultTasks.collectAsState()
+
+    SearchBar(
+        query = query,
+        onQueryChange = {
+            query = it
+            searchViewModel.onSearchTextChanged(it)
+        },
+        onSearch = {
+        },
+        active = active,
+        onActiveChange = { active = it },
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = {
+            Text(text = "Search")
+        },
+        leadingIcon = {
+            Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
+        }
+
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            items(resultTasks) { task ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    MyBox(task = task)
+                }
             }
         }
     }
@@ -243,125 +353,6 @@ fun TaskStatusBottomSheet(viewModel: TasksViewModel, task: Task, onDismissReques
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-fun LazyListScope.taskList(
-    taskList: List<Task>,
-    onMoreClicked: (Task) -> Unit,
-    onLongClicked: (Task) -> Unit
-) {
-    items(taskList) { task ->
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-                .combinedClickable(onLongClick = { onLongClicked(task) }, onClick = {}),
-
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            MyBox(task)
-
-            Box(
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable {
-                        onMoreClicked(task)
-                    },
-                contentAlignment = Alignment.CenterEnd
-
-            ) {
-                Icon(
-                    modifier = Modifier.size(40.dp),
-                    imageVector = Icons.Default.MoreHoriz,
-                    contentDescription = "More"
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun TaskChips(
-    titles: Array<Filter>,
-    modifier: Modifier = Modifier,
-    onTaskTypeSelected: (Filter) -> Unit
-) {
-    val scrollState = rememberScrollState()
-    var selectedIndex by rememberSaveable {
-        mutableIntStateOf(0)
-    }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState)
-    ) {
-        titles.forEachIndexed { index, title ->
-            TaskChip(title.name, selectedIndex == index) {
-                selectedIndex = index
-                onTaskTypeSelected(title)
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TaskChip(title: String, selected: Boolean, onClicked: () -> Unit) {
-    ElevatedFilterChip(selected = selected, onClick = {
-        onClicked()
-    }, label = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium
-            )
-        })
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DoingSearch(searchViewModel: SearchViewModel) {
-    var query by remember { mutableStateOf("") }
-    var active by remember { mutableStateOf(false) }
-
-    val resultTasks by searchViewModel.resultTasks.collectAsState()
-
-    SearchBar(
-        query = query,
-        onQueryChange = {
-            query = it
-            searchViewModel.onSearchTextChanged(it)
-        },
-        onSearch = {
-        },
-        active = active,
-        onActiveChange = { active = it },
-        modifier = Modifier.fillMaxWidth(),
-        placeholder = {
-            Text(text = "Search")
-        },
-        leadingIcon = {
-            Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
-        }
-
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            items(resultTasks) { task ->
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp)
-                ) {
-                    MyBox(task = task)
-                }
-            }
         }
     }
 }
