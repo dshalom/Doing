@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import timber.log.Timber
 
+enum class TS()
 sealed class TaskStatus(val title: String, val icon: ImageVector, val color: Color) {
     object Todo : TaskStatus(title = "To do", Icons.Default.EditNote, color = Color.Blue)
     object InProgress :
@@ -32,12 +33,9 @@ fun Task.matchesSearch(searchText: String): Boolean {
         description
     )
     return matchingCombinations.any {
-        val r = it.contains(
+        return it.contains(
             searchText,
             ignoreCase = true
         )
-        Timber.i("dsds looking if $it contains $searchText  r=$r")
-
-        return r
     }
 }

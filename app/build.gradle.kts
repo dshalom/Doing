@@ -4,6 +4,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("org.jlleitschuh.gradle.ktlint")
+    id("app.cash.sqldelight") version "2.0.0"
     kotlin("kapt")
 }
 
@@ -76,6 +77,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("app.cash.sqldelight:android-driver:2.0.0")
+    implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -90,6 +93,14 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
+
+    sqldelight {
+        databases {
+            create("DoingDatabase") {
+                packageName.set("com.ds.doing")
+            }
+        }
+    }
 }
 
 kapt {

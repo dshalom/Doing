@@ -1,0 +1,12 @@
+CREATE TABLE TaskEntity (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  dateDue TEXT NOT NULL
+);
+
+insert:
+INSERT INTO TaskEntity VALUES(:id,:title,:description,:dateDue);
+
+getPrayers:
+SELECT * FROM TaskEntity;

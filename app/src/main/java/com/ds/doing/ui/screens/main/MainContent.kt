@@ -69,7 +69,7 @@ fun DoingNavigationBar(navController: NavHostController) {
                 },
                 icon = {
                     Icon(
-                        imageVector = if (selected) screen.selectedIcon!! else screen.unSelectedIcon!!,
+                        imageVector = if (selected) screen.selectedIcon else screen.unSelectedIcon,
                         contentDescription = screen.title
                     )
                 },

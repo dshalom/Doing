@@ -2,6 +2,8 @@ package com.ds.doing.ui.screens.tasks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ds.doing.di.DBRepository
+import com.ds.doing.di.InMemoryRepository
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
 import com.ds.doing.domain.repos.TaskRepository
@@ -14,7 +16,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TasksViewModel @Inject constructor(private val taskRepository: TaskRepository) : ViewModel() {
+class TasksViewModel @Inject constructor(
+    @DBRepository
+    private val taskRepository: TaskRepository) : ViewModel() {
 
     private val _state: MutableStateFlow<TasksState> = MutableStateFlow(TasksState())
     private var job: Job? = null

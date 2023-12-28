@@ -52,7 +52,6 @@ fun NewTaskContent(
     id: Int,
     title: String,
     description: String,
-    status: String,
     dateDue: String,
     onBackPressed: () -> Unit
 ) {
@@ -72,13 +71,9 @@ fun NewTaskContent(
                 title,
                 onAddTaskClicked = {
                     viewModel.addTask(
-                        Task(
-                            viewModel.getNextId(),
-                            title = taskState.title,
-                            description = taskState.description,
-                            status = TaskStatus.Todo,
-                            dateDue = taskState.date
-                        )
+                        title = taskState.title,
+                        description = taskState.description,
+                        dateDue = taskState.date
                     )
                     onBackPressed()
                 },

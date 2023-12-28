@@ -2,6 +2,7 @@ package com.ds.doing.ui.screens.tasks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ds.doing.di.InMemoryRepository
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.matchesSearch
 import com.ds.doing.domain.repos.TaskRepository
@@ -17,6 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    @InMemoryRepository
     repository: TaskRepository
 ) : ViewModel() {
 

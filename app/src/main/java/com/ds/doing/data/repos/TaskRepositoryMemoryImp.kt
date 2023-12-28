@@ -15,14 +15,17 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
 
     private val _tasksFlow: MutableStateFlow<List<Task>> = MutableStateFlow(getTestData())
     private val tasksFlow = _tasksFlow.asStateFlow()
-    override fun getNewId(): Int {
-        return id
-    }
 
-    override fun addTask(task: Task) {
+    override fun addTask(title: String, description: String, dateDue: String) {
         ++id
         _tasksFlow.update { state ->
-            state + task
+            state + Task(
+                id = ++id,
+                title = title,
+                description = description,
+                status = TaskStatus.Todo,
+                dateDue = dateDue
+            )
         }
     }
 

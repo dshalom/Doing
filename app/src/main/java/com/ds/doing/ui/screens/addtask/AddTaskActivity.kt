@@ -26,13 +26,11 @@ class AddTaskActivity : ComponentActivity() {
                     val id = intent.getIntExtra("id", 0)
                     val title = intent.getStringExtra("title")
                     val description = intent.getStringExtra("description")
-                    val status = intent.getStringExtra("status")
                     val dateDue = intent.getStringExtra("dateDue")
                     NewTaskContent(
                         id = id,
                         title = title ?: "",
                         description = description ?: "",
-                        status = status ?: "",
                         dateDue = dateDue ?: ""
                     ) {
                         finish()
@@ -52,7 +50,6 @@ class AddTaskActivity : ComponentActivity() {
                 it.putExtra("id", task.id)
                 it.putExtra("title", task.title)
                 it.putExtra("description", task.description)
-                it.putExtra("status", "status")
                 it.putExtra("dateDue", task.dateDue)
             }
         }
