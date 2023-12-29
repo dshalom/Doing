@@ -3,6 +3,7 @@ package com.ds.doing.data.repos
 import com.ds.doing.domain.models.Task
 import com.ds.doing.domain.models.TaskStatus
 import com.ds.doing.domain.repos.TaskRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,14 +17,19 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
     private val _tasksFlow: MutableStateFlow<List<Task>> = MutableStateFlow(getTestData())
     private val tasksFlow = _tasksFlow.asStateFlow()
 
-    override fun addTask(title: String, description: String, dateDue: String) {
+    override fun addTask(
+        title: String,
+        description: String,
+        status: TaskStatus,
+        dateDue: String
+    ) {
         ++id
         _tasksFlow.update { state ->
             state + Task(
                 id = ++id,
                 title = title,
                 description = description,
-                status = TaskStatus.Todo,
+                status = status,
                 dateDue = dateDue
             )
         }
@@ -63,6 +69,9 @@ class TaskRepositoryMemoryImp @Inject constructor() : TaskRepository {
 
     override fun getTasks(): StateFlow<List<Task>> {
         return tasksFlow
+    }
+
+    override fun init(viewModelScope: CoroutineScope) {
     }
 }
 

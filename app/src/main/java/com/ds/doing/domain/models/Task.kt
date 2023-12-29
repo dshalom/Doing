@@ -7,7 +7,6 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import timber.log.Timber
 
 enum class TS()
 sealed class TaskStatus(val title: String, val icon: ImageVector, val color: Color) {

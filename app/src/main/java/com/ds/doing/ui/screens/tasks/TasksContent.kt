@@ -73,7 +73,6 @@ fun TasksContent(
         }
 
     ) { paddingValues ->
-
         val state by viewModel.state.collectAsState()
 
         LaunchedEffect(key1 = null) {

@@ -1,12 +1,26 @@
+import com.ds.doing.domain.models.TaskStatus;
+
 CREATE TABLE TaskEntity (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   description TEXT NOT NULL,
+  status INTEGER AS TaskStatus,
   dateDue TEXT NOT NULL
 );
 
 insert:
-INSERT INTO TaskEntity VALUES(:id,:title,:description,:dateDue);
+INSERT INTO TaskEntity VALUES(:id,:title,:description,:status,:dateDue);
 
-getPrayers:
+getTasks:
 SELECT * FROM TaskEntity;
+
+delete:
+DELETE FROM TaskEntity WHERE id=?;
+
+updateStatus:
+UPDATE TaskEntity
+SET status =? WHERE id =?;
+
+updateTask:
+UPDATE TaskEntity
+SET status =?, title =?, description =?, dateDue =? WHERE id =?;
