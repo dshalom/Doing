@@ -103,6 +103,3 @@ dependencies {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
