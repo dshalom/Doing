@@ -24,6 +24,9 @@ class TasksViewModel @Inject constructor(
     private var job: Job? = null
     val state = _state.asStateFlow()
 
+    init {
+        taskRepository.addTask("a title", "a description", "tomorrow")
+    }
     fun refreshTaskList(taskStatus: TaskStatus? = null) {
         job?.cancel()
         job = viewModelScope.launch {

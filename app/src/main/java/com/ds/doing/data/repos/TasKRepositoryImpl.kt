@@ -13,6 +13,7 @@ class TasKRepositoryImpl @Inject constructor(
     private val taskQueries: TaskQueries
 ) : TaskRepository {
     override fun addTask(title: String, description: String, dateDue: String) {
+        taskQueries.insert(null, title, description, dateDue)
     }
 
     override fun deleteTask(task: Task) {
