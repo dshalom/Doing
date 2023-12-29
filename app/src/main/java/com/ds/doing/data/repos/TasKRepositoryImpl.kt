@@ -24,7 +24,6 @@ class TasKRepositoryImpl @Inject constructor(
 
     private val _tasksFlow: MutableStateFlow<List<Task>> = MutableStateFlow(listOf())
     private val tasksFlow = _tasksFlow.asStateFlow()
-    private lateinit var coroutineScope: CoroutineScope
     override fun addTask(
         title: String,
         description: String,
@@ -59,9 +58,9 @@ class TasKRepositoryImpl @Inject constructor(
         coroutineScope.launch(dispatcher) {
             taskQueries.getTasks()
                 .asFlow()
-                .mapToList(dispatcher).collect { nd ->
+                .mapToList(dispatcher).collect { newTask ->
                     _tasksFlow.update {
-                        nd.map {
+                        newTask.map {
                             Task(
                                 it.id.toInt(),
                                 it.title,
