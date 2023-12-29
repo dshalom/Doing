@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("org.jlleitschuh.gradle.ktlint")
     id("app.cash.sqldelight") version "2.0.0"
+    id("kotlin-parcelize")
     kotlin("kapt")
 }
 
@@ -103,3 +104,6 @@ dependencies {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
